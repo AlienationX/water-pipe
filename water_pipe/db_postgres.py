@@ -57,9 +57,9 @@ class PostgresConnect(Connect):
     
     def insert(self, table_name, data):
         one_data = list(chain.from_iterable(data))  # 二维列表转一维列表
-        print(one_data)
+        # print(one_data)
         n_placeholders = ",".join([f"({self.placeholders})"] * len(data))
-        print(n_placeholders)
+        # print(n_placeholders)
         self.cursor.execute("insert into {} values {}".format(table_name, n_placeholders), one_data)
         # self.cursor.executemany("insert into {} values ({})".format(table_name, self.placeholders), data)
     
@@ -110,7 +110,7 @@ class PostgresConnect(Connect):
         self.placeholders = ",".join(["%s"] * len(self.std_schema_data))
     
     def convert_std_dtype(self, dtype) -> DTYPE:
-        print(dtype)
+        # print(dtype)
         if dtype.get() in ["varchar", "unknown"]:
             return DTYPE("string")
         if dtype.get() == "numeric":
