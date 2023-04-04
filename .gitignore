@@ -24,6 +24,7 @@ var/
 .installed.cfg
 *.egg
 
+.idea/
 .vscode/
 .venv/
 

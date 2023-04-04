@@ -1,7 +1,8 @@
 from itertools import chain
-from base import Connect, DTYPE
 import psycopg2
 import re
+
+from water_pipe.base import Connect, DTYPE
 
 class PostgresConnect(Connect):
     
@@ -16,8 +17,8 @@ class PostgresConnect(Connect):
             ......
         }
         """
-        config = norm_config
-        config["user"] = norm_config.pop("username")
+        config = norm_config.copy()
+        config["user"] = config.pop("username")
         
         self.connect = psycopg2.connect(**config)
         self.cursor = self.connect.cursor()

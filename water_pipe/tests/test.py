@@ -1,7 +1,7 @@
 
-from channel import DataChannel
+from water_pipe.channel import DataChannel
 
-if __name__=='__main__':
+if __name__ == '__main__':
     impala_db_config = {
         "driver": "impala",
         "config": {
@@ -39,12 +39,10 @@ if __name__=='__main__':
     #     channel.query("select * from medical.t2 limit 9")
     #     channel.insert("tmp.t3", 2, is_create=True)
     
-    # with DataChannel(pg_db_config, csv_db_config) as channel: 
-    #     channel.query("select * from medical.dim_date limit 123")
-    #     channel.insert(is_create=True)
+    with DataChannel(pg_db_config, csv_db_config) as channel:
+        channel.query("select * from medical.dim_date limit 123")
+        channel.insert(is_create=True)
         
     with DataChannel(csv_db_config, pg_db_config) as channel: 
         channel.query()
-        channel.insert("medical.t_csv", 2, is_create=True)
-        
-        
+        channel.insert("medical.t_csv", 10, is_create=True)

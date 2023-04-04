@@ -1,7 +1,7 @@
 import csv
 from pathlib import Path
 
-from base import Connect, DTYPE
+from water_pipe.base import Connect, DTYPE
 
 class CsvConnect(Connect):
     def __init__(self, norm_config) -> None:
@@ -14,7 +14,7 @@ class CsvConnect(Connect):
             ......
         }
         """
-        config = norm_config
+        config = norm_config.copy()
         
         # self.connect = None
         self.cursor = None

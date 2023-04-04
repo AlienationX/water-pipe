@@ -1,5 +1,6 @@
-from base import Connect
 from pyhive import hive
+
+from water_pipe.base import Connect
 
 class HiveConnect(Connect):
     

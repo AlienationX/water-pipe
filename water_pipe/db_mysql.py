@@ -1,6 +1,7 @@
 from itertools import chain
-from base import Connect, DTYPE
 import MySQLdb
+
+from water_pipe.base import Connect, DTYPE
 
 class MysqlConnect(Connect):
         
@@ -15,7 +16,7 @@ class MysqlConnect(Connect):
             ......
         }
         """
-        config = norm_config
+        config = norm_config.copy()
         config["user"] = norm_config.pop("username")
         
         self.connect = MySQLdb.connect(**config)

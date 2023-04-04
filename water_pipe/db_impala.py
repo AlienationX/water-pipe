@@ -1,7 +1,8 @@
-from base import Connect, DTYPE
 from impala import dbapi
 from itertools import chain
 import re
+
+from water_pipe.base import Connect, DTYPE
 
 class ImpalaConnect(Connect):
 
@@ -16,7 +17,7 @@ class ImpalaConnect(Connect):
             ......
         }
         """
-        config = norm_config
+        config = norm_config.copy()
         config["user"] = norm_config.pop("username")
 
         self.connect = dbapi.connect(**config)
