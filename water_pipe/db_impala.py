@@ -18,7 +18,7 @@ class ImpalaConnect(Connect):
         }
         """
         config = norm_config.copy()
-        config["user"] = norm_config.pop("username")
+        config["user"] = config.pop("username")
 
         self.connect = dbapi.connect(**config)
         self.cursor = self.connect.cursor()
@@ -107,28 +107,6 @@ class ImpalaConnect(Connect):
             self.std_schema_data.append([col_name, data_type, comment])
             # self.dataset_comment = row[3]  #  describe无法获取表备注 TODO
         self.placeholders = ",".join(["%s"] * len(self.std_schema_data))
-
-    def convert_std_dtype(self, dtype) -> DTYPE:
-        # print(dtype)
-        if dtype.get() == "varchar":
-            return DTYPE("string")
-        if dtype.get() == "numeric":
-            return DTYPE("decimal", 38, 4)
-        
-        for key in self.dtype_map:
-            types = self.dtype_map[key]
-            for type in types:
-                if type == dtype.name:
-                    dtype.name = key
-                    return dtype
-        print(f"ERROR: self to std: {dtype} ==> varchar(128)")
-    
-    def convert_self_dtype(self, dtype) -> DTYPE:
-        for key in self.dtype_map:
-            if key == dtype.name:
-                dtype.name = self.dtype_map[key][0]
-                return dtype
-        print(f"ERROR: std to self: {dtype} ==> varchar(128)")
 
     def create_table(self, table_name):
         cols_list = []

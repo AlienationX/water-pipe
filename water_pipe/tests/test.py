@@ -30,10 +30,10 @@ if __name__ == '__main__':
             # "path": ""
         }
     }
-    # with DataChannel(impala_db_config, pg_db_config) as channel:
-    #     channel.table("tmp.t2")
-    #     # channel.sink_db.execute("truncate table medical.t2")
-    #     channel.insert("medical.t2", 2, is_create=True)
+    with DataChannel(impala_db_config, pg_db_config) as channel:
+        channel.table("tmp.t2")
+        # channel.sink_db.execute("truncate table medical.t2")
+        channel.insert("medical.t2", 2, is_create=True)
     
     # with DataChannel(pg_db_config, impala_db_config) as channel:
     #     channel.query("select * from medical.t2 limit 9")

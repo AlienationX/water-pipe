@@ -18,6 +18,28 @@ class Connect(ABC):
     @abstractmethod
     def insert(self, table_name):
         pass
+    
+    def convert_std_dtype(self, dtype):
+        # print(dtype)
+        if dtype.get() in ["varchar", "unknown"]:  # unknown 为 postgres/greenplum 的数据类型
+            return DTYPE("string")
+        if dtype.get() == "numeric":
+            return DTYPE("decimal", 38, 4)
+        
+        for key in self.dtype_map:
+            types = self.dtype_map[key]
+            for type in types:
+                if type == dtype.name:
+                    dtype.name = key
+                    return dtype
+        print(f"ERROR: self to std: {dtype} ==> varchar(128)")
+    
+    def convert_self_dtype(self, dtype):
+        for key in self.dtype_map:
+            if key == dtype.name:
+                dtype.name = self.dtype_map[key][0]
+                return dtype
+        print(f"ERROR: std to self: {dtype} ==> varchar(128)")
 
 
 class DTYPE:

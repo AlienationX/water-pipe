@@ -1,4 +1,4 @@
-# README
+# Water-pipe
 
 A simple etl tool.
 
@@ -17,9 +17,9 @@ if __name__=='__main__':
     impala_db_config = {
         "driver": "impala",
         "config": {
-            "host": "10.63.82.218",
-            "username": "work",
-            "password": "TwkdFNAdS1nIikzk",
+            "host": "127.0.01",
+            "username": "admin",
+            "password": "admin",
             "database": "default",
             "port": 21050,
             "auth_mechanism": "LDAP",
@@ -28,9 +28,9 @@ if __name__=='__main__':
     pg_db_config = {
         "driver": "postgres",
         "config": {
-            "host": "10.63.82.191",
-            "username": "dw_rw",
-            "password": "Yxsj@123",
+            "host": "127.0.0.1",
+            "username": "admin",
+            "password": "admin",
             "database": "test",
             "port": 5432
         }
