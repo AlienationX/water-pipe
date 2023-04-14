@@ -8,7 +8,7 @@ class CsvConnect(Connect):
         """
         norm_config = {
             "path": "/home/",
-            "filename": "data",
+            "filename": "data.csv",
             "separator": ",",
             "quoting": "",  # 
             ......
@@ -16,23 +16,25 @@ class CsvConnect(Connect):
         """
         config = norm_config.copy()
         
+        path = config.get("path") if config.get("path") else "."
+        filename = config["filename"]
+        separator = config.get("separator") if config.get("separator") else ","
+        quote = csv.QUOTE_MINIMAL
+        
+        self.file = Path(path).joinpath(filename)
+        self.data = None
+        
+        # register
+        csv.register_dialect("dialect", delimiter=separator, quoting=quote)
+        
+        ##############################
         # self.connect = None
         self.cursor = None
         
         self.std_schema_data = []
         self.dataset_comment = ""
         self.placeholders = ""
-        
-        path = config.get("path") if config.get("path") else "."
-        filename = config["filename"]
-        separator = config.get("separator") if config.get("separator") else ","
-        quote = csv.QUOTE_MINIMAL
-        
-        self.file = Path(path).joinpath(filename + ".csv")
-        self.data = None
-        
-        # register
-        csv.register_dialect("dialect", delimiter=separator, quoting=quote)
+        ##############################
         
     def execute(self, sql):
         raise Exception("Not Supported")

@@ -27,19 +27,21 @@ class MysqlConnect(Connect):
         self.placeholders = ""
         
         self.dtype_map = {
-            "tinyint": ["tinyint", "smallint"],
-            "int": ["int", "mediumint"],
-            "bigint": ["bigint"],
+            # 必须都要对应，且不存在的类型需要放在最下面
+            "tinyint": ["tiny"],
+            "int": ["int", "int24"],
+            "bigint": ["bigint", "long"],
             "float": ["float"],
             "double": ["double"],
-            "decimal": ["decimal"],
+            "decimal": ["decimal", "newdecimal"],
             "char": ["char"],
             "varchar": ["varchar"],
-            "text": ["text"],
+            "text": ["text", "string"],
             "date": ["date"],
             "time": ["time"],
             "datetime": ["datetime"],
             "timestamp": ["timestamp"],
+            # mysql不存在的数据类型
         }
 
     def execute(self, sql):
@@ -56,24 +58,22 @@ class MysqlConnect(Connect):
         return self.cursor.fetchmany
     
     def insert(self, table_name, data):
-        one_data = list(chain.from_iterable(data))  # 二维列表转一维列表
-        print(one_data)
-        n_placeholders = ",".join([f"({self.placeholders})"] * len(data))
-        print(n_placeholders)
-        self.cursor.execute("insert into {} values {}".format(table_name, n_placeholders), one_data)
         # self.cursor.executemany("insert into {} values ({})".format(table_name, self.placeholders), data)
+        
+        one_data = list(chain.from_iterable(data))  # 二维列表转一维列表
+        n_placeholders = ",".join([f"({self.placeholders})"] * len(data))
+        self.cursor.execute("insert into {} values {}".format(table_name, n_placeholders), one_data)
     
     def set_query_schema(self, sql):
-        type_sql = "select oid, typname from pg_type where oid < 10000"
-        self.cursor.execute(type_sql)
-        type_map = {}
-        for row in self.cursor.fetchall():
-            type_map[row[0]] = row[1]
+        ft = MySQLdb.constants.FIELD_TYPE
+        type_map = {getattr(ft, k): k.lower() for k in dir(ft) if not k.startswith('_')}
         
         self.cursor.execute("select * from (" + sql + ") t limit 0")
         for row in self.cursor.description:
+            # print(row)
             col_name = row[0]
-            data_type = self.convert_std_dtype(DTYPE(type_map[row[1]], row[4], row[5]))
+            # data_type = self.convert_std_dtype(DTYPE(type_map[row[1]], row[4], row[5]))
+            data_type = self.convert_std_dtype(DTYPE(type_map[row[1]]))
             comment = ""
             self.std_schema_data.append([col_name, data_type, comment])
         self.placeholders = ",".join(["%s"] * len(self.std_schema_data))

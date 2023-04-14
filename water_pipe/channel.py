@@ -49,7 +49,7 @@ class DataChannel:
         self.sink_db.dataset_comment = self.source_db.dataset_comment
         self.sink_db.placeholders = self.source_db.placeholders
 
-    def insert(self, sink_table=None, batch_size=1000, is_create=False, header=True):
+    def insert(self, sink_table="file", batch_size=1000, is_create=False, header=True):
 
         if is_create:
             if self.sink_driver in ["csv", "excel"]:
@@ -75,7 +75,7 @@ class DataChannel:
                 duration = 1 if elapsed_time.seconds == 0 else elapsed_time.seconds
                 speed = int(j / duration)
                 # progress = "{:.2f}".format(j / row_count * 100)
-                logger.info(f"insert into {sink_table} {j} data succeed, speed {speed} records/s, elapsed time {elapsed_time}")
+                logger.info(f"insert into {sink_table} {j} record succeed, speed {speed} records/s, elapsed time {elapsed_time}")
                 i += n
             else:
                 break

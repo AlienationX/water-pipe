@@ -28,6 +28,7 @@ class PostgresConnect(Connect):
         self.placeholders = ""
         
         self.dtype_map = {
+            # 必须都要对应，且不存在的类型需要放在最下面
             "tinyint": ["int2"],
             "int": ["int4"],
             "bigint": ["int8"],
@@ -39,8 +40,9 @@ class PostgresConnect(Connect):
             "text": ["text"],
             "date": ["date"],
             "time": ["time"],
-            "datetime": ["timestamp"],
             "timestamp": ["timestamp"],
+            # postgres不存在的数据类型
+            "datetime": ["timestamp"],
         }
 
     def execute(self, sql):
@@ -72,7 +74,16 @@ class PostgresConnect(Connect):
             type_map[row[0]] = row[1]
         
         self.cursor.execute("select * from (" + sql + ") t limit 0")
+        # https://www.psycopg.org/docs/cursor.html
+        # 0.name: the name of the column returned.
+        # 1.type_code: the PostgreSQL OID of the column.
+        # 2.display_size: the actual length of the column in bytes.
+        # 3.internal_size: the size in bytes of the column associated to this column on the server.
+        # 4.precision: total number of significant digits in columns of type NUMERIC. None for other types.
+        # 5.scale: count of decimal digits in the fractional part in columns of type NUMERIC. None for other types.
+        # 6.null_ok: always None as not easy to retrieve from the libpq.
         for row in self.cursor.description:
+            # print(row)  # Column(name='id', type_code=23)
             col_name = row[0]
             data_type = self.convert_std_dtype(DTYPE(type_map[row[1]], row[4], row[5]))
             comment = ""

@@ -1,47 +1,5 @@
 from abc import ABC, abstractmethod
 
-
-class Connect(ABC):
-
-    @abstractmethod
-    def execute(self, sql):
-        pass
-
-    @abstractmethod
-    def query(self, sql):
-        pass
-
-    @abstractmethod
-    def table(self, table_name):
-        pass
-
-    @abstractmethod
-    def insert(self, table_name):
-        pass
-    
-    def convert_std_dtype(self, dtype):
-        # print(dtype)
-        if dtype.get() in ["varchar", "unknown"]:  # unknown 为 postgres/greenplum 的数据类型
-            return DTYPE("string")
-        if dtype.get() == "numeric":
-            return DTYPE("decimal", 38, 4)
-        
-        for key in self.dtype_map:
-            types = self.dtype_map[key]
-            for type in types:
-                if type == dtype.name:
-                    dtype.name = key
-                    return dtype
-        print(f"ERROR: self to std: {dtype} ==> varchar(128)")
-    
-    def convert_self_dtype(self, dtype):
-        for key in self.dtype_map:
-            if key == dtype.name:
-                dtype.name = self.dtype_map[key][0]
-                return dtype
-        print(f"ERROR: std to self: {dtype} ==> varchar(128)")
-
-
 class DTYPE:
 
     def __init__(self, name: str, precision: int = None, scale: int = None):
@@ -60,3 +18,47 @@ class DTYPE:
 
     def __str__(self) -> str:
         return f"name={self.name}, precision={self.precision}, scale={self.scale}"
+    
+    
+class Connect(ABC):
+
+    @abstractmethod
+    def execute(self, sql):
+        pass
+
+    @abstractmethod
+    def query(self, sql):
+        pass
+
+    @abstractmethod
+    def table(self, table_name):
+        pass
+
+    @abstractmethod
+    def insert(self, table_name):
+        pass
+    
+    def convert_std_dtype(self, dtype:DTYPE) -> DTYPE:
+        # print(dtype)
+        # print(dtype.get())
+        if dtype.get() in ["varchar", "unknown"]:  # unknown 为 postgres/greenplum 的数据类型
+            return DTYPE("text")
+        if dtype.get() in ["numeric", "decimal", "newdecimal"]:  # newdecimal 为 mysql 的数据类型
+            return DTYPE("decimal", 38, 4)
+        
+        for key in self.dtype_map:
+            types = self.dtype_map[key]
+            for type in types:
+                if type == dtype.name:
+                    dtype.name = key
+                    return dtype
+        print(f"ERROR: self to std: {dtype} ==> varchar(128)")
+    
+    def convert_self_dtype(self, dtype:DTYPE) -> DTYPE:
+        # print(dtype)
+        # print(dtype.get())
+        for key in self.dtype_map:
+            if key == dtype.name:
+                dtype.name = self.dtype_map[key][0]
+                return dtype
+        print(f"ERROR: std to self: {dtype} ==> varchar(128)")

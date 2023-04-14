@@ -28,7 +28,7 @@ class ImpalaConnect(Connect):
         self.placeholders = ""
 
         self.dtype_map = {
-            # 必须都要对应
+            # 必须都要对应，且不存在的类型需要放在最下面
             "tinyint": ["tinyint"],
             "int": ["int"],
             "bigint": ["bigint"],
@@ -38,10 +38,11 @@ class ImpalaConnect(Connect):
             "char": ["char"],
             "varchar": ["varchar"],
             "text": ["string"],
+            "timestamp": ["timestamp"],
+            # impala不存在的数据类型
+            "datetime": ["timestamp"],
             "date": ["timestamp"],
             "time": ["timestamp"],
-            "datetime": ["timestamp"],
-            "timestamp": ["timestamp"],
         }
 
     def execute(self, sql):
@@ -59,7 +60,7 @@ class ImpalaConnect(Connect):
 
     def insert(self, table_name, data):
         # TODO
-        # print(data)
+        print(data)
 
         # 一批数据会产生一个文件 OPTIMIZE
         # one_data = list(chain.from_iterable(data))  # 二维列表转一维列表
@@ -67,6 +68,7 @@ class ImpalaConnect(Connect):
         # self.cursor.execute("insert into {} values {}".format(table_name, n_placeholders), one_data)
 
         # 一条数据会产生一个文件 OPTIMIZE
+        print("insert into {} values ({})".format(table_name, self.placeholders))
         self.cursor.executemany("insert into {} values ({})".format(table_name, self.placeholders), data)
 
     def set_query_schema(self, sql):

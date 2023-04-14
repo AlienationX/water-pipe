@@ -4,6 +4,17 @@ A simple etl tool.
 
 ## Introduction
 
+小水管，数据流
+
+### Key features
+
+- 迭代器导入导出
+
+### TODO
+
+- hive/impala/greenplum的insert方法
+- 扩展注册功能
+
 ## Install
 
 pip install water-pipe
@@ -68,6 +79,7 @@ if __name__=='__main__':
 pip install loguru
 
 pip install impyla
+pip install psycopg
 pip install psycopg2
 pip install mysqlclient
 pip install openpyxl
