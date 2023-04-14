@@ -12,8 +12,9 @@ A simple etl tool.
 
 ### TODO
 
-- hive/impala/greenplum的insert方法
+- 实现hive/impala/greenplum的insert方法
 - 扩展注册功能
+- 进程池
 
 ## Install
 
