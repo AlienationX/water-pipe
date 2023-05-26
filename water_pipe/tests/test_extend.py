@@ -6,9 +6,17 @@ class A:
     def get(self):
         print(self.name)
         
+class B:
+    pass
 
 a=A('aaa')
 a.get()
+
+print(type(a))
+print(type(A))
+print(a.__class__.__name__)
+print(A.__class__.__name__)
+print(isinstance(a, (A, B)))
 
 # 动态增加属性
 setattr(a, 'info', 'information')

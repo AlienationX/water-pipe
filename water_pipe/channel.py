@@ -6,23 +6,25 @@ class DataChannel:
 
     def __init__(self, source_config, sink_config):
         # driver_map = {
-        #     # "mysql": MySQLdb.connect(**sink_config.config),
+        #     "mysql": MySQLdb.connect(**sink_config.config),
         #     "oracle": "cx_Oracle.connect()",
-        #     # "mssql": pymssql.connect(**source_config.config),
-        #     # "postgres": psycopg2.connect(**source_config["config"]),
+        #     "mssql": pymssql.connect(**source_config.config),
+        #     "postgres": psycopg2.connect(**source_config["config"]),
         #     "postgres": PostgresConnect,
-        #     # "hive": hive.connect(**source_config["config"]),
+        #     "hive": hive.connect(**source_config["config"]),
         #     "impala": ImpalaConnect,
         # }
 
         # 动态导入, 主要是避免安装所有数据库的依赖包, 用什么数据库安装什么数据库即可
-        self.source_driver = source_config["driver"]
-        self.sink_driver = sink_config["driver"]
-        source_module = __import__(f"water_pipe.db_{self.source_driver}", fromlist=[f"db_{self.source_driver}"])
-        sink_module = __import__(f"water_pipe.db_{self.sink_driver}", fromlist=[f"db_{self.sink_driver}"])
-        source_class = getattr(source_module, self.source_driver.capitalize() + "Connect")
-        sink_class = getattr(sink_module, self.sink_driver.capitalize() + "Connect")
-
+        # self.source_driver = source_config["driver"]
+        # self.sink_driver = sink_config["driver"]
+        # source_module = __import__(f"water_pipe.db_{self.source_driver}", fromlist=[f"db_{self.source_driver}"])
+        # sink_module = __import__(f"water_pipe.db_{self.sink_driver}", fromlist=[f"db_{self.sink_driver}"])
+        # source_class = getattr(source_module, self.source_driver.capitalize() + "Connect")
+        # sink_class = getattr(sink_module, self.sink_driver.capitalize() + "Connect")
+        source_class = source_config["driver"]
+        sink_class = sink_config["driver"]
+        
         self.source_db = source_class(source_config["config"])
         self.sink_db = sink_class(sink_config["config"])
         self.dataset = []
@@ -51,8 +53,10 @@ class DataChannel:
 
     def insert(self, sink_table="file", batch_size=1000, is_create=False, header=True):
 
+        is_local_db = self.sink_db.__class__.__name__ in ["CsvConnect", "ExcelConnect"]
+        
         if is_create:
-            if self.sink_driver in ["csv", "excel"]:
+            if is_local_db:
                 self.sink_db.create_table(header=header)
             else:
                 self.sink_db.create_table(sink_table)
@@ -66,7 +70,7 @@ class DataChannel:
                 n = len(data)
                 j = i + n
 
-                if self.sink_driver in ["csv", "excel"]:
+                if is_local_db:
                     self.sink_db.insert(data)
                 else:
                     self.sink_db.insert(sink_table, data)

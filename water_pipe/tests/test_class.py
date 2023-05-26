@@ -1,9 +1,16 @@
-
-from water_pipe.channel import DataChannel
+from water_pipe import (
+    DataChannel, 
+    ImpalaConnect, 
+    PostgresConnect, 
+    GreenplumConnect,
+    MysqlConnect,
+    CsvConnect,
+    ExcelConnect
+)
 
 if __name__ == '__main__':
     impala_db_config = {
-        "driver": "impala",
+        "driver": ImpalaConnect,
         "config": {
             "host": "10.63.82.218",
             "username": "work",
@@ -14,7 +21,7 @@ if __name__ == '__main__':
         }
     }
     pg_db_config = {
-        "driver": "postgres",
+        "driver": PostgresConnect,
         "config": {
             "host": "10.63.82.191",
             "username": "dw_rw",
@@ -24,7 +31,7 @@ if __name__ == '__main__':
         }
     }
     gp_db_config = {
-        "driver": "greenplum",
+        "driver": GreenplumConnect,
         "config": {
             "host": "10.63.82.191",
             "username": "dw_rw",
@@ -34,7 +41,7 @@ if __name__ == '__main__':
         }
     }
     mysql_db_config = {
-        "driver": "mysql",
+        "driver": MysqlConnect,
         "config": {
             "host": "10.63.82.207",
             "username": "test",
@@ -54,14 +61,14 @@ if __name__ == '__main__':
         }
     }
     csv_db_config = {
-        "driver": "csv",
+        "driver": CsvConnect,
         "config": {
             "path": "e:/Codes/Python/water-pipe/water_pipe/tests/",
             "filename": "data.csv",
         }
     }
     excel_db_config = {
-        "driver": "excel",
+        "driver": ExcelConnect,
         "config": {
             "path": "e:/Codes/Python/water-pipe/water_pipe/tests/",
             "filename": "data.xlsx",
@@ -98,8 +105,8 @@ if __name__ == '__main__':
 
     with DataChannel(impala_db_config, pg_db_config) as channel:
         channel.query("select * from medical.dim_date limit 1234")
-        channel.insert("medical.dim_date_t1", 10, is_create=True)
+        channel.insert("medical.dim_date_t1", 100, is_create=True)
         
-    with DataChannel(impala_db_config, gp_db_config) as channel:
-        channel.query("select * from medical.dim_date limit 1234")
-        channel.insert("medical.dim_date_t2", 10, is_create=True)
+    # with DataChannel(impala_db_config, gp_db_config) as channel:
+    #     channel.query("select * from medical.dim_date limit 1234")
+    #     channel.insert("medical.dim_date_t2", 10, is_create=True)

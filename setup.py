@@ -12,7 +12,7 @@ from shutil import rmtree
 from setuptools import find_packages, setup, Command
 
 # Package meta-data.
-NAME = 'water-pipe'
+NAME = 'water_pipe'
 DESCRIPTION = 'A simple etl tool.'
 URL = 'https://github.com/AlienationX/water-pipe'
 EMAIL = 'le7yi_ss@hotmail.com'

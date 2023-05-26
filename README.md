@@ -81,6 +81,7 @@ pip install loguru
 
 pip install impyla
 pip install psycopg
+pip install psycopg-binary
 pip install psycopg2
 pip install mysqlclient
 pip install openpyxl

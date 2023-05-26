@@ -99,16 +99,21 @@ class PostgresConnect(Connect):
                t1.numeric_scale as scale,
                -- case when t1.udt_name like '%int%' then 'int'
                --      when t1.udt_name like '%float%' then 'float'
-               -- 	   when t1.udt_name like '%numeric%' then concat('numeric(', t1.numeric_precision, ',' , t1.numeric_scale, ')')
-               --      when t1.udt_name like '%varchar%' then concat(t1.udt_name, case when t1.character_maximum_length is null then '' else '(' ||t1.character_maximum_length || ')' end)
-               -- 	   when t1.udt_name like '%char%' then concat('char', case when t1.character_maximum_length is null then '' else '(' ||t1.character_maximum_length || ')' end)
-               --      else t1.udt_name end as data_type,
+               --      when t1.udt_name like '%numeric%' then concat('numeric', 
+               --                                                    case when t1.numeric_precision is null then '' else '(' || t1.numeric_precision end, 
+               --                                                    case when t1.numeric_scale is null then '' else ',' || t1.numeric_scale || ')' end)
+               --      when t1.udt_name like '%varchar%' then concat(t1.udt_name, 
+               --                                                    case when t1.character_maximum_length is null then '' else '(' || t1.character_maximum_length || ')' end)
+               --      when t1.udt_name like '%char%' then concat('char', 
+               --                                                 case when t1.character_maximum_length is null then '' else '(' || t1.character_maximum_length || ')' end)
+               --      else t1.udt_name::varchar end as data_type_str,             -- 字段类型(已转换的)
                t3.description as comment,
                t4.description as dataset_comment
-	    from information_schema.columns as t1
-	    join pg_catalog.pg_class as t2 on t1.table_name = t2.relname
-	    left join pg_catalog.pg_description as t3 on t2.oid = t3.objoid and t1.ordinal_position = t3.objsubid
-	    left join pg_catalog.pg_description as t4 on t2.oid = t4.objoid and t4.objsubid = 0
+	    from information_schema.columns t1
+        join pg_catalog.pg_namespace pn on t1.table_schema = pn.nspname
+        join pg_catalog.pg_class t2 on pn.oid = t2.relnamespace and t1.table_name = t2.relname 
+        left join pg_catalog.pg_description t3 on t2.oid = t3.objoid and t1.ordinal_position = t3.objsubid
+        left join pg_catalog.pg_description t4 on t2.oid = t4.objoid and t4.objsubid = 0
 	    where concat(t1.table_schema, '.', t1.table_name) = '{table_name}'
 	    order by t1.ordinal_position
         """
